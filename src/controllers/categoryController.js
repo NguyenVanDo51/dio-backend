@@ -10,7 +10,6 @@ router.post('/', body('name').isLength({ min: 1 }), async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      console.log('aaaa');
       return res.status(400).json({ errors: errors.array() });
     }
     const category = await Category.create({
@@ -25,6 +24,7 @@ router.post('/', body('name').isLength({ min: 1 }), async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const categories = await Category.find({});
+
     res.sendSuccess(categories);
   } catch (details) {
     res.sendError(ErrorMessage.ERROR_COMMON, details);
@@ -43,13 +43,13 @@ router.get('/:categoryId', async (req, res) => {
 router.delete('/:categoryId', async (req, res) => {
   const { categoryId } = req.params;
   try {
-  let categoryDeleted = 0;
-  let lessonsDeleted = 0;
-  categoryDeleted = await Category.findByIdAndDelete(categoryId);
-  if (categoryDeleted) {
-    lessonsDeletedResult = await Lesson.deleteMany({ categoryId: categoryDeleted._id });
-  }
-  res.sendSuccess({ categoryDeleted, lessonsDeleted: lessonsDeleted?.deletedCount });
+    let categoryDeleted = 0;
+    let lessonsDeleted = 0;
+    categoryDeleted = await Category.findByIdAndDelete(categoryId);
+    if (categoryDeleted) {
+      lessonsDeletedResult = await Lesson.deleteMany({ categoryId: categoryDeleted._id });
+    }
+    res.sendSuccess({ categoryDeleted, lessonsDeleted: lessonsDeleted?.deletedCount });
   } catch (details) {
     res.sendError(ErrorMessage.ERROR_COMMON, details);
   }

@@ -4,6 +4,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import cloudinary from 'cloudinary';
 
 let app = express();
 app.use(cors());
@@ -14,7 +15,6 @@ app.use(
   })
 );
 app.use(bodyParser.json());
-
 app.response.sendSuccess = function (data) {
   return this.status(200).json(data);
 };
@@ -26,6 +26,23 @@ app.response.sendError = function (message, details) {
 app.response.senValidateFailed = function (errors) {
   return this.status(400).json({ errors });
 };
+
+const allowedOrigins = ['https://h5.zdn.vn/', 'zbrowser://h5.zdn.vn/'];
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes('h5.zdn.vn')) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  return next();
+});
+
+cloudinary.config({
+  cloud_name: 'dio-upload',
+  api_key: '455614735726925',
+  api_secret: 'exgroScxsd0e5qT1b038clA8hh4',
+});
 
 // Heroku Mongoose connection
 mongoose.connect(process.env.DB_HOST, { useNewUrlParser: true, useUnifiedTopology: true });
